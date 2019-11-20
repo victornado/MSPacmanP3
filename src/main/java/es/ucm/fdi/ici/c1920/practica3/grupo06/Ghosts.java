@@ -31,7 +31,7 @@ public class Ghosts extends POGhostController {
 	
 	
 	
-	
+	private String[] salida = {"search", "attack", "defend", "run"};
 	
 	FuzzyEngine fe = new FuzzyEngine(FuzzyEngine.FUZZY_CONTROLLER.GHOSTS);
 	HashMap<String, Double> input = new HashMap<String, Double>();   HashMap<String, Double> output = new HashMap<String, Double>();
@@ -64,22 +64,22 @@ public class Ghosts extends POGhostController {
         
         switch(num++ % 4) {
         case 0:
-        	input.put("ticks", 15.0);
+        	input.put("ticks", 1.0);
         	input.put("cornerDistance", 15.0);
         	input.put("ghostEdible", 0.0);
         	input.put("powPillsLeft", 4.0);
         	break;
         case 1:
-        	input.put("ticks", 80.0);
+        	input.put("ticks", 40.0);
         	input.put("cornerDistance", 15.0);
         	input.put("ghostEdible", 1.0);
         	input.put("powPillsLeft", 4.0);
         	break;
         case 2:
-        	input.put("ticks", 5.0);
-        	input.put("cornerDistance", 15.0);
+        	input.put("ticks", 1.0);
+        	input.put("cornerDistance", 60.0);
         	input.put("ghostEdible", 0.0);
-        	input.put("powPillsLeft", 4.0);
+        	input.put("powPillsLeft", 0.0);
         	break;
         case 3:
         	input.put("ticks", 5.0);
@@ -92,7 +92,37 @@ public class Ghosts extends POGhostController {
         }
         
         fe.evaluate("FuzzyGhosts", input, output);
+        
+        double runaway = output.get("search");
+		String solution = salida[0];
+		for (int i = 1; i < salida.length; i++) {
+			if(output.get(salida[i]) > runaway) {
+				runaway = output.get(salida[i]);
+				solution = salida[i];
+			}
+		}
+		
+		switch(solution) {
+		case "search":
+			System.out.println((num - 1)%4 + "search" + runaway);
+			break;
+		case "attack":
+			System.out.println((num - 1)%4 + "attack" + runaway);
+			break;
+		case "defend":
+			System.out.println((num - 1)%4 + "defend" + runaway);
+			break;
+		case "run":
+			System.out.println((num - 1)%4 + "run" + runaway);
+			break;
+		
+		
+		}
+		
+		/*
 		double runaway = output.get("strategy");
+		
+		
 		if(runaway < 10) 
 			System.out.println((num - 1)%4 + "search" + runaway);
 		else if(runaway < 20 ) 
@@ -103,6 +133,7 @@ public class Ghosts extends POGhostController {
 			System.out.println((num - 1)%4 + "run" + runaway);
 		else  
 			System.out.println((num - 1)%4 + "random" + runaway);
+		*/
 		
 		return MOVE.UP;
 		
