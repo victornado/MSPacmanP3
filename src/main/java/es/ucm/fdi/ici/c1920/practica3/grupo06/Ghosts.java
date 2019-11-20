@@ -60,7 +60,39 @@ public class Ghosts extends POGhostController {
 	public MOVE getMove(GHOST ghost, Game game, long timeDue) {
 		
 		
-        input.clear(); output.clear();
+        
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		input.clear(); output.clear();
         
         switch(num++ % 4) {
         case 0:
