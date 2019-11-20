@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 /*
@@ -25,7 +26,6 @@ public final class MsPacMan extends PacmanController {
 	HashMap<String, Double> input;
 	HashMap<String, Double> output;
 	
-	private double[] distances = { MAX_DISTANCE, MAX_DISTANCE, MAX_DISTANCE, MAX_DISTANCE };// blinky pinky inky sue
 	private int current;
 	private HashSet<Integer> pillList;
 	
@@ -63,29 +63,7 @@ public final class MsPacMan extends PacmanController {
 				isEdible = 1;
 		}
 		
-		//NO DEBERIA HACER FALTA
-		//POR SI ACASO NECESITAMOS TODAS LAS DISTANCIAS DE LOS FANTASMAS EN LAS ESTRATEGIAS
-		switch (aux) {
-		case BLINKY: {
-			distances[0] = gDistance;
-			break;
-		}
-		case PINKY: {
-			distances[1] = gDistance;
-			break;
-		}
-		case INKY: {
-			distances[2] = gDistance;
-			break;
-		}
-		case SUE: {
-			distances[3] = gDistance;
-			break;
-		}
-		}
-		// FIN
-		
-		input.put("GostDistance", gDistance);
+		input.put("GhostDistance", gDistance);
 		input.put("isEdible", isEdible);
 		fe.evaluate("FuzzyMsPacMan", input, output);
 		double runaway = output.get("runAway");
@@ -110,48 +88,41 @@ public final class MsPacMan extends PacmanController {
 		 */
 	}
 
-	private MOVE runAwayFromClosestGhost(Game game) {
+	/*private MOVE huir(Game game) {
 		System.out.println("RunAway");
 		double min_distance = Double.MAX_VALUE;
 		GHOST closest_ghost = null;
 		for (GHOST ghost : GHOST.values()) {
-			double distance = distances[ghost.ordinal()];
+			//double distance = distances[ghost.ordinal()];
 			if (distance < min_distance) {
 				min_distance = distance;
 				closest_ghost = ghost;
 			}
 		}
 		return game.getNextMoveAwayFromTarget(current, game.getGhostCurrentNodeIndex(closest_ghost), DM.PATH);
-	}
+	}*/
 
 	private MOVE goToPills(Game game) {
 		System.out.println("goToPills");
+		Random rng= new Random();
+		int []vecinos=game.getNeighbouringNodes(current);
+		
+		int node=vecinos[rng.nextInt(vecinos.length)];
 		int[] pills = game.getActivePillsIndices();
-		int[] powerPills = game.getActivePowerPillsIndices();
-
-		ArrayList<Integer> targets = new ArrayList<Integer>();
-
-		for (int i = 0; i < pills.length; i++) // check which pills are available
-		{
-			if ((game.isPillStillAvailable(i) != null) && game.isPillStillAvailable(i) != null) {
-				targets.add(pills[i]);
+		if(pills.length==0) {//no ve pills cerca
+			if(!pillList.isEmpty()) {//la lista de pills que ha visto anteriormente no esta vacia
+				for (int i : pillList) {
+					 node =i;
+					 pillList.remove(i);
+					break;
+				}
+				
 			}
+			//else va un vecino aleatorio
 		}
-
-		for (int i = 0; i < powerPills.length; i++) // check with power pills are available
-		{
-			if ((game.isPowerPillStillAvailable(i) != null) && game.isPowerPillStillAvailable(i)) {
-				targets.add(powerPills[i]);
-			}
+		else {//ve pills cerca
+			node=game.getClosestNodeIndexFromNodeIndex(current, pills, DM.MANHATTAN);
 		}
-
-		int[] targetsArray = new int[targets.size()]; // convert from ArrayList to array
-		for (int i = 0; i < targetsArray.length; i++) {
-			targetsArray[i] = targets.get(i);
-		}
-		// return the next direction once the closest target has been identified
-		return game.getNextMoveTowardsTarget(current,
-				game.getClosestNodeIndexFromNodeIndex(current, targetsArray, DM.PATH), DM.PATH);
-
+		return game.getNextMoveTowardsTarget(current,node, DM.PATH);
 	}
 }
