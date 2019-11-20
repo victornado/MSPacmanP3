@@ -23,7 +23,7 @@ public class FuzzyEngine {
 	private static final String SRC_CLASSES = "src.main.java.";
 	private static final String DATA_FOLDER = ".data.";
 	private static final String PACMAN_FCL = "pacman.fcl";
-	private static final String GHOSTS_FCL = "ghosts2.fcl";
+	private static final String GHOSTS_FCL = "ghosts.fcl";
 	
 	
 	public FuzzyEngine(FUZZY_CONTROLLER controller)

@@ -1,4 +1,4 @@
-FUNCTION_BLOCK FuzzyGhosts	// Block definition (there may be more than one block per file)
+FUNCTION_BLOCK FuzzyMsPacMan	// Block definition (there may be more than one block per file)
 
 VAR_INPUT				// Define input variables
 	ticks : REAL;
@@ -8,10 +8,7 @@ VAR_INPUT				// Define input variables
 END_VAR
 
 VAR_OUTPUT				// Define output variable
-	search : REAL;
-	attack : REAL;
-	defend : REAL;
-	run : REAL;
+	strategy : REAL;
 END_VAR
 
 FUZZIFY ticks			// Fuzzify input variable 'service': {'poor', 'good' , 'excellent'}
@@ -31,37 +28,11 @@ FUZZIFY powPillsLeft		// Fuzzify input variable 'service': {'poor', 'good' , 'ex
 	TERM lot := (3, 1) (4, 1);
 END_FUZZIFY
 
-DEFUZZIFY search			// Defzzzify output variable 'tip' : {'cheap', 'average', 'generous' }
-	
-	TERM null := (0, 1) (8, 1) (12, 0);
-	TERM half := (12,1) (18, 1) (22, 0);
-	TERM high := (22, 1) (28, 1) (30, 0);
-	METHOD : COG;		// Use 'Center Of Gravity' defuzzification method
-	DEFAULT := 0;		// Default value is 0 (if no rule activates defuzzifier)
-END_DEFUZZIFY
-
-DEFUZZIFY attack			// Defzzzify output variable 'tip' : {'cheap', 'average', 'generous' }
-	
-	TERM null := (0, 1) (8, 1) (12, 0);
-	TERM half := (12,1) (18, 1) (22, 0);
-	TERM high := (22, 1) (28, 1) (30, 0);
-	METHOD : COG;		// Use 'Center Of Gravity' defuzzification method
-	DEFAULT := 0;		// Default value is 0 (if no rule activates defuzzifier)
-END_DEFUZZIFY
-
-DEFUZZIFY defend			// Defzzzify output variable 'tip' : {'cheap', 'average', 'generous' }
-	
-	TERM null := (0, 1) (8, 1) (12, 0);
-	TERM half := (12,1) (18, 1) (22, 0);
-	TERM high := (22, 1) (28, 1) (30, 0);
-	METHOD : COG;		// Use 'Center Of Gravity' defuzzification method
-	DEFAULT := 0;		// Default value is 0 (if no rule activates defuzzifier)
-END_DEFUZZIFY
-
-DEFUZZIFY run			// Defzzzify output variable 'tip' : {'cheap', 'average', 'generous' }
-	TERM null := (0, 1) (8, 1) (12, 0);
-	TERM half := (12,1) (18, 1) (22, 0);
-	TERM high := (22, 1) (28, 1) (30, 0);
+DEFUZZIFY strategy			// Defzzzify output variable 'tip' : {'cheap', 'average', 'generous' }
+	TERM search := (0,1) (9, 1) (10, 0);
+	TERM attack := (10, 1) (19,1) (20, 0);
+	TERM defend := (20, 1) (29, 1) (30, 0);
+	TERM run := (30, 1) (39, 1) (40, 0);
 	METHOD : COG;		// Use 'Center Of Gravity' defuzzification method
 	DEFAULT := 0;		// Default value is 0 (if no rule activates defuzzifier)
 END_DEFUZZIFY
@@ -71,11 +42,11 @@ RULEBLOCK MsPacManRules
 	ACT : MIN;			// Use 'min' activation method
 	ACCU : MAX;			// Use 'MAX' accumulation method (Other options PROBOR and SUM)
 
-	RULE 1 : IF ghostEdible IS yes THEN run IS high;
-	RULE 2 : IF ticks IS high THEN search IS high; 
-	RULE 3 : IF ticks IS low AND cornerDistance IS notNear THEN attack is high;
-	RULE 4 : IF ticks IS low AND cornerDistance IS near AND powPillsLeft IS few OR powPillsLeft IS some THEN attack IS half;
-	RULE 5 : IF ticks IS low AND cornerDistance IS near AND powPillsLeft IS lot OR powPillsLeft IS some THEN defend IS half;
+	RULE 1 : IF ghostEdible IS yes THEN strategy IS run;
+	RULE 2 : IF ticks IS high THEN strategy IS search; 
+	RULE 3 : IF ticks IS low AND cornerDistance IS notNear THEN strategy is attack;
+	RULE 4 : IF ticks IS low AND cornerDistance IS near AND powPillsLeft IS few OR powPillsLeft IS some THEN strategy IS attack;
+	RULE 5 : IF ticks IS low AND cornerDistance IS near AND powPillsLeft IS lot OR powPillsLeft IS some THEN strategy IS defend;
 
 END_RULEBLOCK
 
