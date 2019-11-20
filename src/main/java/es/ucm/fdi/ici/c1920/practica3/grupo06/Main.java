@@ -20,8 +20,8 @@ public class Main {
 		
 		
 		
-		//PacmanController pacMan = new MsPacMan();
-		PacmanController pacMan = new HumanController(new KeyBoardInput());
+		PacmanController pacMan = new MsPacMan();
+		//PacmanController pacMan = new HumanController(new KeyBoardInput());
 
 		GhostController ghosts = new Ghosts();
 		
