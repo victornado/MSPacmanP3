@@ -1,0 +1,56 @@
+FUNCTION_BLOCK FuzzyGhosts	// Block definition (there may be more than one block per file)
+
+VAR_INPUT				// Define input variables
+	ticks : REAL;
+	cornerDistance : REAL;
+	ghostEdible : REAL;
+	powPillsLeft : REAL;
+END_VAR
+
+VAR_OUTPUT				// Define output variable
+	strategy : REAL;
+END_VAR
+
+FUZZIFY ticks			// Fuzzify input variable 'service': {'poor', 'good' , 'excellent'}
+	TERM low := (0, 1) (25, 0) ; 
+	TERM high := (20, 0) (30, 1);
+END_FUZZIFY
+FUZZIFY cornerDistance			// Fuzzify input variable 'service': {'poor', 'good' , 'excellent'}
+	TERM near := (0, 1) (15, 1) (25, 0) ; 
+	TERM notNear := (20, 0) (25, 1);
+END_FUZZIFY
+FUZZIFY ghostEdible			// Fuzzify input variable 'service': {'poor', 'good' , 'excellent'}
+	TERM yes := 1;
+END_FUZZIFY
+FUZZIFY powPillsLeft		// Fuzzify input variable 'service': {'poor', 'good' , 'excellent'}
+	TERM few := (0, 1) (1, 1) (2, 0) ; 
+	TERM some := (2, 1) (3, 0);
+	TERM lot := (3, 1) (4, 1);
+END_FUZZIFY
+
+DEFUZZIFY strategy			// Defzzzify output variable 'tip' : {'cheap', 'average', 'generous' }
+	TERM search := (0,1) (9, 1) (10, 0);
+	TERM attack := (10, 1) (19,1) (20, 0);
+	TERM defend := (20, 1) (29, 1) (30, 0);
+	TERM run := (30, 1) (39, 1) (40, 0);
+	TERM random := (40, 1) (49, 1) (50, 0);
+	METHOD : COG;		// Use 'Center Of Gravity' defuzzification method
+	DEFAULT := 15;		// Default value is 0 (if no rule activates defuzzifier)
+END_DEFUZZIFY
+
+RULEBLOCK MsPacManRules
+	AND : MIN;			// Use 'min' for 'and' (also implicit use 'max' for 'or' to fulfill DeMorgan's Law)
+	ACT : MIN;			// Use 'min' activation method
+	ACCU : MAX;			// Use 'MAX' accumulation method (Other options PROBOR and SUM)
+
+	RULE 1 : IF ghostEdible IS yes THEN strategy IS run;
+	RULE 2 : IF ticks IS high THEN strategy IS search; 
+	RULE 3 : IF ticks IS low AND cornerDistance IS notNear THEN strategy is attack;
+	RULE 4 : IF ticks IS low AND cornerDistance IS near AND powPillsLeft IS few OR powPillsLeft IS some THEN strategy IS attack;
+	RULE 5 : IF ticks IS low AND cornerDistance IS near AND powPillsLeft IS lot THEN strategy IS defend;
+	RULE 5 : IF ticks IS low AND cornerDistance IS near AND powPillsLeft IS some THEN strategy IS random;
+	
+END_RULEBLOCK
+
+END_FUNCTION_BLOCK
+
