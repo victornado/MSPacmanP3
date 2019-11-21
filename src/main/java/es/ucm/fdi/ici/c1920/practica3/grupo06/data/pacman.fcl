@@ -39,7 +39,7 @@ RULEBLOCK MsPacManRules
 	RULE 3 : IF GhostDistance IS far AND isEdible IS no THEN result IS moveToPill;
 	RULE 4 : IF GhostDistance IS medium AND isEdible IS no THEN result IS escape;
 	RULE 5 : IF GhostDistance IS far AND isEdible IS yes THEN result IS chase;
-	RULE 4 : IF GhostDistance IS medium AND isEdible IS yes THEN result IS chase;
+	RULE 6 : IF GhostDistance IS medium AND isEdible IS yes THEN result IS chase;
 END_RULEBLOCK
 
 END_FUNCTION_BLOCK
