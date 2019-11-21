@@ -43,7 +43,7 @@ public final class MsPacMan extends PacmanController {
 	@Override
 	public MOVE getMove(Game game, long timeDue) {
 		current = game.getPacmanCurrentNodeIndex();
-		MOVE sol=MOVE.NEUTRAL;//solucion del FuzzyEngine
+		//MOVE sol=MOVE.NEUTRAL;//solucion del FuzzyEngine
 		
 		//metemos las pills que veamos si estamos en una junction
 		if(game.isJunction(current)) {
