@@ -77,10 +77,16 @@ public final class MsPacMan extends PacmanController {
 		result = output.get("result");
 		//CON IF's PONER TODAS LAS ESTRATEGIAS SEGUN EL PARAMETRO RUNAWAY
 		System.out.print(result+"--> ");
-		if(result > RUNAWAY_LIMIT)
+		if(result==0) {
+			
+			System.out.println("paramos");
+		}
+		if(result > 25)
 			return escape(game); 
-		else return
-				  goToPills(game);
+		else if (result>15 && result<25)
+			return chassingGhost(game);
+		else
+			return goToPills(game);
 		
 	}
 
@@ -100,6 +106,7 @@ public final class MsPacMan extends PacmanController {
 	}
 
 	private MOVE chassingGhost(Game game) {
+		System.out.println(" chase" );
 		if(nearestGhost!=null && game.isGhostEdible(nearestGhost)) {//si hay fantasma cerca
 			return game.getNextMoveTowardsTarget(current, game.getGhostCurrentNodeIndex(nearestGhost), DM.PATH);//va a por el
 		}

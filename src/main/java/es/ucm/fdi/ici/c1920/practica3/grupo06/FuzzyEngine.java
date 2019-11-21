@@ -75,7 +75,9 @@ public class FuzzyEngine {
 			Variable var = variables.get(varName);
 			if(var.isOutput())
 				output.put(varName, var.defuzzify());
+			
 		}
+		
 		return; 
 	}
 	
@@ -93,6 +95,7 @@ public class FuzzyEngine {
 	/**
 	 * Main method for testing
 	 */
+	/*
 	public static void main(String[] args)
 	{
 		FuzzyEngine fe = new FuzzyEngine(FUZZY_CONTROLLER.MSPACMAN);
@@ -105,5 +108,5 @@ public class FuzzyEngine {
 		fe.evaluate("FuzzyMsPacMan", input, output);
 		System.out.println(output.get("result"));
 		fe.debugRules("FuzzyMsPacMan", "MsPacManRules");
-	}
+	}*/
 }
