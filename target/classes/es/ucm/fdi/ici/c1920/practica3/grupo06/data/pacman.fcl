@@ -6,7 +6,7 @@ VAR_INPUT				// Define input variables
 END_VAR
 
 VAR_OUTPUT				// Define output variable
-	runAway : REAL;
+	result : REAL;
 END_VAR
 
 FUZZIFY GhostDistance			// Fuzzify input variable 'service': {'poor', 'good' , 'excellent'}
@@ -19,7 +19,7 @@ FUZZIFY isEdible			// Fuzzify input variable 'service': {'poor', 'good' , 'excel
 	TERM yes := 1 ; 
 END_FUZZIFY
 
-DEFUZZIFY runAway			// Defzzzify output variable 'tip' : {'cheap', 'average', 'generous' }
+DEFUZZIFY result			// Defzzzify output variable 'tip' : {'cheap', 'average', 'generous' }
 	TERM moveToPP := (0,1) (5,1) (15,0);
 	TERM chasing :=  gauss 15 5;
 	TERM escape := (15,0) (25,1) (30,1);
@@ -32,9 +32,9 @@ RULEBLOCK MsPacManRules
 	ACT : MIN;			// Use 'min' activation method
 	ACCU : MAX;			// Use 'MAX' accumulation method (Other options PROBOR and SUM)
 
-	RULE 1 : IF GhostDistance IS near THEN runAway IS escape;
-	RULE 2 : IF GhostDistance IS medium THEN runAway IS moveToPP;
-	RULE 3 : IF GhostDistance IS far THEN runAway IS chasing;
+	RULE 1 : IF GhostDistance IS near THEN result IS escape;
+	RULE 2 : IF GhostDistance IS medium THEN result IS moveToPP;
+	RULE 3 : IF GhostDistance IS near AND isEdible IS yes THEN result IS chasing;
 	
 END_RULEBLOCK
 
