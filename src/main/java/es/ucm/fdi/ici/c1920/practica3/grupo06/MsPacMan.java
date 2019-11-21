@@ -33,6 +33,8 @@ public final class MsPacMan extends PacmanController {
 	private double result;
 	GHOST nearestGhost;
 	double gDistance;
+	int ticks;
+	
 	public MsPacMan() {
 		fe = new FuzzyEngine(FuzzyEngine.FUZZY_CONTROLLER.MSPACMAN);
 		input = new HashMap<String, Double>();
@@ -41,10 +43,16 @@ public final class MsPacMan extends PacmanController {
 		result=0;
 		nearestGhost=null;
 		gDistance=200;
+		ticks =0;
 	}
 
 	@Override
 	public MOVE getMove(Game game, long timeDue) {
+		if(ticks==100) {
+			nearestGhost =null;
+			gDistance=200;
+		}
+		else  if(nearestGhost!=null)ticks++;
 		current = game.getPacmanCurrentNodeIndex();
 		//MOVE sol=MOVE.NEUTRAL;//solucion del FuzzyEngine
 		
@@ -55,8 +63,9 @@ public final class MsPacMan extends PacmanController {
 				pillList.add(i);
 			}
 		}
-		//FIN
 		
+		//FIN
+		if(game.isPillStillAvailable(current))pillList.remove(current);
 		input.clear();
 		output.clear();
 		
@@ -67,7 +76,7 @@ public final class MsPacMan extends PacmanController {
 		if(ghost!=null) {
 			nearestGhost=ghost;
 			gDistance = game.getDistance(game.getGhostCurrentNodeIndex(ghost), current, DM.PATH);
-			if (game.getGhostEdibleTime(ghost) > 0)
+			if (game.isGhostEdible(nearestGhost))
 				isEdible = 1;
 		}
 		
@@ -93,21 +102,21 @@ public final class MsPacMan extends PacmanController {
 	public MOVE escape(Game game) {
 		System.out.println(" escape" );
 		//int cerca=30;
-		int pacmanIndex = game.getPacmanCurrentNodeIndex();// actual nodo del pacman
+		//int pacmanIndex = game.getPacmanCurrentNodeIndex();// actual nodo del pacman
 		
-		GHOST nearestGh = PacmanUtils.getNearestChasingGhost(game, 200, pacmanIndex);// devuelve el fantasma mas cercano a pacman
+		//GHOST nearestGh = PacmanUtils.getNearestChasingGhost(game, 200, pacmanIndex);// devuelve el fantasma mas cercano a pacman
 		//devuelve los nodos vecinos sin tener en cuenta el opuesto
-		int[] vecinos= game.getNeighbouringNodes(pacmanIndex, game.getPacmanLastMoveMade()) ;
+		//int[] vecinos= game.getNeighbouringNodes(pacmanIndex, game.getPacmanLastMoveMade()) ;
 		//De todos los nodos vecinos a pacman selecciona el nodo mas lejano al fantasma
-		int nodoFarthest=game.getFarthestNodeIndexFromNodeIndex(game.getGhostCurrentNodeIndex(nearestGh), vecinos, DM.EUCLID);
+		//int nodoFarthest=game.getFarthestNodeIndexFromNodeIndex(game.getGhostCurrentNodeIndex(nearestGhost), vecinos, DM.EUCLID);
 		//realiza el movimiento segun el nodo mas lejos del fantasma
-		MOVE mvs=game.getNextMoveTowardsTarget(pacmanIndex,nodoFarthest,DM.PATH);
+		MOVE mvs=game.getNextMoveAwayFromTarget(current, game.getGhostCurrentNodeIndex(nearestGhost), DM.PATH)/*.getNextMoveTowardsTarget(pacmanIndex,nodoFarthest,DM.PATH)*/;
 		return mvs;
 	}
 
 	private MOVE chassingGhost(Game game) {
 		System.out.println(" chase" );
-		if(nearestGhost!=null && game.isGhostEdible(nearestGhost)) {//si hay fantasma cerca
+		if(nearestGhost!=null ) {//si hay fantasma cerca
 			return game.getNextMoveTowardsTarget(current, game.getGhostCurrentNodeIndex(nearestGhost), DM.PATH);//va a por el
 		}
 		else return goToPills(game);//va a por pills

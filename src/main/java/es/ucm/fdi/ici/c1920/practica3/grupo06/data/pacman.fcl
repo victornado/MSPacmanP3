@@ -24,7 +24,7 @@ DEFUZZIFY result			// Defzzzify output variable 'tip' : {'cheap', 'average', 'ge
 	
 	TERM moveToPill := (0,1) (5,1) (15,0);
 	TERM chase :=  (15,0) (20,1) (25,0)
-	TERM escape := (25,0) (25,1) (35,1);
+	TERM escape := (25,0) (30,1) (35,1);
 	METHOD : COG;		// Use 'Center Of Gravity' defuzzification method
 	DEFAULT := 0;		// Default value is 0 (if no rule activates defuzzifier)
 END_DEFUZZIFY
@@ -37,8 +37,9 @@ RULEBLOCK MsPacManRules
 	RULE 1 : IF GhostDistance IS near AND isEdible IS no THEN result IS escape;
 	RULE 2 : IF GhostDistance IS near AND isEdible IS yes THEN result IS chase;
 	RULE 3 : IF GhostDistance IS far AND isEdible IS no THEN result IS moveToPill;
-	RULE 4 : IF GhostDistance IS medium AND isEdible IS no THEN result IS moveToPill;
-	
+	RULE 4 : IF GhostDistance IS medium AND isEdible IS no THEN result IS escape;
+	RULE 5 : IF GhostDistance IS far AND isEdible IS yes THEN result IS chase;
+	RULE 4 : IF GhostDistance IS medium AND isEdible IS yes THEN result IS chase;
 END_RULEBLOCK
 
 END_FUNCTION_BLOCK
