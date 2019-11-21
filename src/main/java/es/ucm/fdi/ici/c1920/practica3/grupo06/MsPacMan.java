@@ -32,13 +32,15 @@ public final class MsPacMan extends PacmanController {
 	private HashSet<Integer> pillList;
 	private double result;
 	GHOST nearestGhost;
-	
+	double gDistance;
 	public MsPacMan() {
 		fe = new FuzzyEngine(FuzzyEngine.FUZZY_CONTROLLER.MSPACMAN);
 		input = new HashMap<String, Double>();
 		output = new HashMap<String, Double>();
 		pillList=new HashSet<Integer>();
 		result=0;
+		nearestGhost=null;
+		gDistance=200;
 	}
 
 	@Override
@@ -57,12 +59,13 @@ public final class MsPacMan extends PacmanController {
 		
 		input.clear();
 		output.clear();
-		double gDistance=200;
+		
 		double isEdible = -1;
 		
 		GHOST ghost = Metodos.getNearestChasingGhost(game, 200, current);//buscamos al fantasma mas cercano
-		nearestGhost=ghost;
+		
 		if(ghost!=null) {
+			nearestGhost=ghost;
 			gDistance = game.getDistance(game.getGhostCurrentNodeIndex(ghost), current, DM.PATH);
 			if (game.getGhostEdibleTime(ghost) > 0)
 				isEdible = 1;
@@ -97,7 +100,7 @@ public final class MsPacMan extends PacmanController {
 	}
 
 	private MOVE chassingGhost(Game game) {
-		if(nearestGhost!=null) {//si hay fantasma cerca
+		if(nearestGhost!=null && game.isGhostEdible(nearestGhost)) {//si hay fantasma cerca
 			return game.getNextMoveTowardsTarget(current, game.getGhostCurrentNodeIndex(nearestGhost), DM.PATH);//va a por el
 		}
 		else return goToPills(game);//va a por pills
