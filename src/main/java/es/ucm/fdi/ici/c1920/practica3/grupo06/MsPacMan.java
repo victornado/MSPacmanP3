@@ -65,7 +65,7 @@ public final class MsPacMan extends PacmanController {
 		}
 		
 		//FIN
-		if(game.isPillStillAvailable(current))pillList.remove(current);
+		if(pillList.contains(current) )pillList.remove(current);
 		input.clear();
 		output.clear();
 		
