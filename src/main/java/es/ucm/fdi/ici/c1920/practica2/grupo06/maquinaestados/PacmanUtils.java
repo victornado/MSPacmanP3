@@ -15,10 +15,13 @@ public class PacmanUtils {
 		GHOST minGh = null;
 		double minDist = limit;
 		for (GHOST gh : GHOST.values()) {
-			double dist = game.getDistance(pacmanIndex, game.getGhostCurrentNodeIndex(gh), DM.MANHATTAN);
-			if (dist <= minDist) {
-				minDist = dist;
-				minGh = gh;
+			int ghostNode= game.getGhostCurrentNodeIndex(gh);
+			if(ghostNode !=-1) {
+				double dist = game.getDistance(pacmanIndex,ghostNode , DM.MANHATTAN);
+				if (dist <= minDist) {
+					minDist = dist;
+					minGh = gh;
+				}
 			}
 		}
 		return minGh;

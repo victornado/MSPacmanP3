@@ -14,6 +14,8 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
+import es.ucm.fdi.ici.c1920.practica2.grupo06.maquinaestados.PacmanUtils;
+
 /*
  * The Class RandomPacMan.
  */
@@ -28,13 +30,14 @@ public final class MsPacMan extends PacmanController {
 	
 	private int current;
 	private HashSet<Integer> pillList;
-	
+	private double result;
 
 	public MsPacMan() {
 		fe = new FuzzyEngine(FuzzyEngine.FUZZY_CONTROLLER.MSPACMAN);
 		input = new HashMap<String, Double>();
 		output = new HashMap<String, Double>();
 		pillList=new HashSet<Integer>();
+		result=0;
 	}
 
 	@Override
@@ -55,58 +58,48 @@ public final class MsPacMan extends PacmanController {
 		output.clear();
 		double gDistance=200;
 		double isEdible = -1;
-		GHOST aux = Metodos.getNearestChasingGhost(game, 200, current);//buscamos al fantasma mas cercano
+		
+		GHOST ghost = Metodos.getNearestChasingGhost(game, 200, current);//buscamos al fantasma mas cercano
 
-		if(aux!=null) {
-			gDistance = game.getDistance(game.getGhostCurrentNodeIndex(aux), current, DM.PATH);
-			if (game.getGhostEdibleTime(aux) > 0)
+		if(ghost!=null) {
+			gDistance = game.getDistance(game.getGhostCurrentNodeIndex(ghost), current, DM.PATH);
+			if (game.getGhostEdibleTime(ghost) > 0)
 				isEdible = 1;
 		}
 		
 		input.put("GhostDistance", gDistance);
 		input.put("isEdible", isEdible);
 		fe.evaluate("FuzzyMsPacMan", input, output);
-		double runaway = output.get("runAway");
+		result = output.get("result");
 		//CON IF's PONER TODAS LAS ESTRATEGIAS SEGUN EL PARAMETRO RUNAWAY
+		System.out.print(result+"--> ");
+		if(result > RUNAWAY_LIMIT)
+			return escape(game); 
+		else return
+				  goToPills(game);
 		
-		return sol;
-		
-		/*
-		 * current = game.getPacmanCurrentNodeIndex(); input.clear(); output.clear();
-		 * 
-		 * for (GHOST ghost : GHOST.values()) { double distance =
-		 * game.getShortestPathDistance(current, game.getGhostCurrentNodeIndex(ghost));
-		 * if(distance == -1) distance = 200; if(distance != 0) // With PO visibility
-		 * non observable ghosts distance is 0. distances[ghost.ordinal()] = distance;
-		 * input.put(ghost.name()+"distance", distances[ghost.ordinal()]); }
-		 * System.out.println(Arrays.toString(distances)); fe.evaluate("FuzzyMsPacMan",
-		 * input, output); double runaway = output.get("runAway");
-		 * System.out.println(runaway);
-		 * 
-		 * if(runaway > RUNAWAY_LIMIT) return runAwayFromClosestGhost(game); else return
-		 * goToPills(game);
-		 */
 	}
 
-	/*private MOVE huir(Game game) {
-		System.out.println("RunAway");
-		double min_distance = Double.MAX_VALUE;
-		GHOST closest_ghost = null;
-		for (GHOST ghost : GHOST.values()) {
-			//double distance = distances[ghost.ordinal()];
-			if (distance < min_distance) {
-				min_distance = distance;
-				closest_ghost = ghost;
-			}
-		}
-		return game.getNextMoveAwayFromTarget(current, game.getGhostCurrentNodeIndex(closest_ghost), DM.PATH);
-	}*/
+	public MOVE escape(Game game) {
+		System.out.println(" escape" );
+		//int cerca=30;
+		int pacmanIndex = game.getPacmanCurrentNodeIndex();// actual nodo del pacman
+		
+		GHOST nearestGh = PacmanUtils.getNearestChasingGhost(game, 200, pacmanIndex);// devuelve el fantasma mas cercano a pacman
+		//devuelve los nodos vecinos sin tener en cuenta el opuesto
+		int[] vecinos= game.getNeighbouringNodes(pacmanIndex, game.getPacmanLastMoveMade()) ;
+		//De todos los nodos vecinos a pacman selecciona el nodo mas lejano al fantasma
+		int nodoFarthest=game.getFarthestNodeIndexFromNodeIndex(game.getGhostCurrentNodeIndex(nearestGh), vecinos, DM.EUCLID);
+		//realiza el movimiento segun el nodo mas lejos del fantasma
+		MOVE mvs=game.getNextMoveTowardsTarget(pacmanIndex,nodoFarthest,DM.PATH);
+		return mvs;
+	}
 
 	private MOVE goToPills(Game game) {
-		System.out.println("goToPills");
+		System.out.println("  goToPills ");
 		Random rng= new Random();
-		int []vecinos=game.getNeighbouringNodes(current);
-		
+		//int []vecinos=game.getNeighbouringNodes(current);
+		int[] vecinos= game.getNeighbouringNodes(current, game.getPacmanLastMoveMade()) ;
 		int node=vecinos[rng.nextInt(vecinos.length)];
 		int[] pills = game.getActivePillsIndices();
 		if(pills.length==0) {//no ve pills cerca
@@ -116,7 +109,6 @@ public final class MsPacMan extends PacmanController {
 					 pillList.remove(i);
 					break;
 				}
-				
 			}
 			//else va un vecino aleatorio
 		}
@@ -125,4 +117,6 @@ public final class MsPacMan extends PacmanController {
 		}
 		return game.getNextMoveTowardsTarget(current,node, DM.PATH);
 	}
+	
+	
 }

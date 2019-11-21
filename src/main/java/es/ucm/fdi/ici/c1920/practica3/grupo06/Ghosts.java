@@ -93,7 +93,7 @@ public class Ghosts extends POGhostController {
         
         fe.evaluate("FuzzyGhosts", input, output);
 		double runaway = output.get("strategy");
-		if(runaway < 10) 
+		/*if(runaway < 10) 
 			System.out.println((num - 1)%4 + "search" + runaway);
 		else if(runaway < 20 ) 
 			System.out.println((num - 1)%4 + "defend" + runaway);
@@ -103,7 +103,7 @@ public class Ghosts extends POGhostController {
 			System.out.println((num - 1)%4 + "run" + runaway);
 		else  
 			System.out.println((num - 1)%4 + "random" + runaway);
-		
+		*/
 		return MOVE.UP;
 		
 		

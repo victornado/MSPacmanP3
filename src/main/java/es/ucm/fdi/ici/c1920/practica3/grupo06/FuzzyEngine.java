@@ -103,7 +103,7 @@ public class FuzzyEngine {
 		input.put("INKYdistance", 50.0);
 		input.put("SUEdistance", 17.0);
 		fe.evaluate("FuzzyMsPacMan", input, output);
-		System.out.println(output.get("runAway"));
+		System.out.println(output.get("result"));
 		fe.debugRules("FuzzyMsPacMan", "MsPacManRules");
 	}
 }
