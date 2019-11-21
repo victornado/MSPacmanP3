@@ -15,6 +15,7 @@ public class Main {
 		.setGhostsMessage(false)
 		.setVisual(true)
 		.setScaleFactor(2.0)
+		.setPacmanPOvisual(false)
 		.build();
 		
 		

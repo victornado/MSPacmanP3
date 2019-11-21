@@ -1,4 +1,4 @@
-FUNCTION_BLOCK FuzzyMsPacMan	// Block definition (there may be more than one block per file)
+FUNCTION_BLOCK FuzzyGhosts	// Block definition (there may be more than one block per file)
 
 VAR_INPUT				// Define input variables
 	ticks : REAL;
@@ -33,8 +33,9 @@ DEFUZZIFY strategy			// Defzzzify output variable 'tip' : {'cheap', 'average', '
 	TERM attack := (10, 1) (19,1) (20, 0);
 	TERM defend := (20, 1) (29, 1) (30, 0);
 	TERM run := (30, 1) (39, 1) (40, 0);
+	TERM random := (40, 1) (49, 1) (50, 0);
 	METHOD : COG;		// Use 'Center Of Gravity' defuzzification method
-	DEFAULT := 0;		// Default value is 0 (if no rule activates defuzzifier)
+	DEFAULT := 15;		// Default value is 0 (if no rule activates defuzzifier)
 END_DEFUZZIFY
 
 RULEBLOCK MsPacManRules
@@ -46,8 +47,9 @@ RULEBLOCK MsPacManRules
 	RULE 2 : IF ticks IS high THEN strategy IS search; 
 	RULE 3 : IF ticks IS low AND cornerDistance IS notNear THEN strategy is attack;
 	RULE 4 : IF ticks IS low AND cornerDistance IS near AND powPillsLeft IS few OR powPillsLeft IS some THEN strategy IS attack;
-	RULE 5 : IF ticks IS low AND cornerDistance IS near AND powPillsLeft IS lot OR powPillsLeft IS some THEN strategy IS defend;
-
+	RULE 5 : IF ticks IS low AND cornerDistance IS near AND powPillsLeft IS lot THEN strategy IS defend;
+	RULE 5 : IF ticks IS low AND cornerDistance IS near AND powPillsLeft IS some THEN strategy IS random;
+	
 END_RULEBLOCK
 
 END_FUNCTION_BLOCK

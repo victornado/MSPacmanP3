@@ -338,9 +338,53 @@ public class Metodos {
 		return game.getClosestNodeIndexFromNodeIndex(pacmanIndex, PowpillsIndices, DM.MANHATTAN);
 	}
 
-	public static Integer[] nextExitsToPacman() {
+	public static ArrayList<Integer> nextExitsToPacman(Game game, int pacmanIndex, MOVE pacmanMove) {
 		ArrayList<Integer> solList = new ArrayList<Integer>();
-		return null;
+		int aux;
+		for(MOVE mv: MOVE.values()) {
+			if(mv != MOVE.NEUTRAL && pacmanMove != mv.opposite() && (aux = game.getNeighbour(pacmanIndex, mv)) != -1) {
+				solList.add(expandPath(game, aux, mv));
+			}
+		}
+		
+		return solList;
 
+	}
+
+	public static int expandPath(Game game, int index, MOVE mv) {
+		
+		if (game.isJunction(index))
+			return index;
+
+		int nextJunction = index;
+		MOVE lastMove = mv;
+
+		while (true) {
+
+			int aux = game.getNeighbour(nextJunction, lastMove);
+
+			if (aux == -1) {
+
+				int i = 0;
+				boolean jumpOut = false;
+				while (i < allMoves.length && !jumpOut) {
+					if (allMoves[i].opposite() != lastMove) {
+						aux = game.getNeighbour(nextJunction, allMoves[i]);
+						if (aux != -1) {
+							nextJunction = aux;
+							lastMove = allMoves[i];
+							jumpOut = true;
+						}
+					}
+					i++;
+
+				}
+			} else if (game.isJunction(aux)) {
+				return aux;
+			} else {
+				nextJunction = aux;
+			}
+		}
+		
 	}
 }

@@ -85,10 +85,10 @@ public final class MsPacMan extends PacmanController {
 		fe.evaluate("FuzzyMsPacMan", input, output);
 		result = output.get("result");
 		//CON IF's PONER TODAS LAS ESTRATEGIAS SEGUN EL PARAMETRO RUNAWAY
-		System.out.print(result+"--> ");
+		//System.out.print(result+"--> ");
 		if(result==0) {
 			
-			System.out.println("paramos");
+			//System.out.println("paramos");
 		}
 		if(result > 25)
 			return escape(game); 
@@ -100,7 +100,7 @@ public final class MsPacMan extends PacmanController {
 	}
 
 	public MOVE escape(Game game) {
-		System.out.println(" escape" );
+		//System.out.println(" escape" );
 		//int cerca=30;
 		//int pacmanIndex = game.getPacmanCurrentNodeIndex();// actual nodo del pacman
 		
@@ -115,7 +115,7 @@ public final class MsPacMan extends PacmanController {
 	}
 
 	private MOVE chassingGhost(Game game) {
-		System.out.println(" chase" );
+		//System.out.println(" chase" );
 		if(nearestGhost!=null ) {//si hay fantasma cerca
 			return game.getNextMoveTowardsTarget(current, game.getGhostCurrentNodeIndex(nearestGhost), DM.PATH);//va a por el
 		}
@@ -123,7 +123,7 @@ public final class MsPacMan extends PacmanController {
 	}
 	
 	private MOVE goToPills(Game game) {
-		System.out.println("  goToPills ");
+		//System.out.println("  goToPills ");
 		Random rng= new Random();
 		//int []vecinos=game.getNeighbouringNodes(current);
 		int[] vecinos= game.getNeighbouringNodes(current, game.getPacmanLastMoveMade()) ;
