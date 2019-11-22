@@ -22,7 +22,6 @@ FUZZIFY cornerDistance			// Fuzzify input variable 'service': {'poor', 'good' , 
 	TERM near := (0, 1) (15, 1) (25, 0) ; 
 	TERM notNear := (20, 0) (25, 1);
 END_FUZZIFY
-
 FUZZIFY powPillsLeft		// Fuzzify input variable 'service': {'poor', 'good' , 'excellent'}
 	TERM few := (0, 1) (1, 1) (2, 0) ; 
 	TERM some := (2, 1) (3, 0);
