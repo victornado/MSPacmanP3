@@ -22,6 +22,8 @@ public class HumanController extends PacmanController {
     @Override
     public MOVE getMove(Game game, long dueTime) {
         //        System.out.println("Returned: " + input.getKey());
+    	//if(game.isJunction(game.getPacmanCurrentNodeIndex()))
+    	//	System.out.println("JUNCTION --> " + game.getPacmanCurrentNodeIndex());
         switch (input.getKey()) {
             case KeyEvent.VK_UP:
                 return MOVE.UP;

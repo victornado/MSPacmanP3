@@ -5,24 +5,19 @@ import pacman.game.Constants.DM;
 import pacman.game.Constants.GHOST;
 import pacman.game.Constants.MOVE;
 import pacman.game.Game;
-import pacman.game.internal.Ghost;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
-import java.util.Set;
 
-import es.ucm.fdi.ici.c1920.practica2.grupo06.maquinaestados.PacmanUtils;
 
 /*
  * The Class RandomPacMan.
  */
 public final class MsPacMan extends PacmanController {
 
-	private static final Double RUNAWAY_LIMIT = 15.0;
-	private static final Double MAX_DISTANCE = 200.0;
+	//private static final Double RUNAWAY_LIMIT = 15.0;
+	//private static final Double MAX_DISTANCE = 200.0;
 
 	FuzzyEngine fe;
 	HashMap<String, Double> input;

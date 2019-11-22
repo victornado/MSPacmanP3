@@ -20,6 +20,8 @@ public class Ghosts extends POGhostController {
 	private double lastNActivePowPill = 4;//nº de Pow Pill activas en el tick anterior
 	private double cornerDistance;
 	private double ghostEdible;
+	private double ghostEdibleTime;
+	
 	
 	private int lastSeePacman = -1; //última pos donde vi a pacman.
 	private int lastMaze = 0; //index del anterior maze
@@ -29,14 +31,16 @@ public class Ghosts extends POGhostController {
 	
 	private String[] salida = {"search", "attack", "defend", "run"};
 	private boolean chase = false;
+	private int blinkyPos = 2;
+	private int inkyPos = 3;
 	
 	
 	FuzzyEngine fe = new FuzzyEngine(FuzzyEngine.FUZZY_CONTROLLER.GHOSTS);
 	HashMap<String, Double> input = new HashMap<String, Double>();   HashMap<String, Double> output = new HashMap<String, Double>();
 	
 	
-	//Posiciones importantes de los maze, en orden: nw, ne, sw, se, pipe1i, pipe2i, pipe1d, pipe2d.
-	private int[][] mazeIndexes = {{0, 78, 1191, 1291}, 
+	//Posiciones importantes de los maze, en orden: nw, ne, sw, se. 0,1,3,2
+	private int[][] mazeIndexes = {{0, 78, 1191, 1291, 153, 237, 1020, 936}, 
 			{0, 86, 1217, 1317}, 
 			{0, 78, 1300, 1378}, 
 			{0, 100, 1218, 1307}};
@@ -46,12 +50,15 @@ public class Ghosts extends POGhostController {
 			lastSeePacman = game.getPacManInitialNodeIndex();
 		if(lastMaze != game.getMazeIndex())
 			init(game);
-		
+		if(game.wasPacManEaten()) {
+			inkyPos = 3;
+			blinkyPos = 2;
+		}
 		ticks++;
 		if(game.wasPowerPillEaten())
 			lastNActivePowPill--;
 		ghostEdible = 0;
-		
+		ghostEdibleTime = 0;
 		cornerDistance = nearestCornerPacmanDistance(game); 
 	}
 	
@@ -59,38 +66,48 @@ public class Ghosts extends POGhostController {
 	public MOVE getMove(GHOST ghost, Game game, long timeDue) {
 		
 		updatePacmanState(game, game.getPacmanCurrentNodeIndex() != -1);
-        if(game.isGhostEdible(ghost))
+        if(game.isGhostEdible(ghost)) 
         	ghostEdible = 1;
+        if(game.getGhostEdibleTime(ghost) > ghostEdibleTime)
+        	ghostEdibleTime = game.getGhostEdibleTime(ghost);
+        
+        
 		input.clear(); output.clear();
         
 		input.put("ticks", ticks);
     	input.put("cornerDistance", cornerDistance);
-    	input.put("ghostEdible", ghostEdible);
+    	//input.put("ghostEdible", ghostEdible);
     	input.put("powPillsLeft", lastNActivePowPill);
-        
+    	input.put("ghostEdibleTime", ghostEdibleTime);
+    	
         fe.evaluate("FuzzyGhosts", input, output);
         
+        //System.out.println("--------------------------");
         double runaway = output.get("search");
+        //System.out.println("search --> " + runaway);
 		String solution = salida[0];
 		for (int i = 1; i < salida.length; i++) {
+			//System.out.println( salida[i] + " --> " + output.get(salida[i]));
 			if(output.get(salida[i]) > runaway) {
 				runaway = output.get(salida[i]);
 				solution = salida[i];
 			}
 		}
+		//System.out.println("--------------------------");
+		
 		
 		switch(solution) {
 		case "search":
-			System.out.println("search" + runaway);
+			//System.out.println("search" + runaway);
 			return searchPacman(game, ghost);
 		case "attack":
-			System.out.println("attack" + runaway);
+			//System.out.println("attack" + runaway);
 			return attackPacman(game, ghost);
 		case "defend":
-			System.out.println("defend" + runaway);
+			//System.out.println("defend" + runaway);
 			return defendPacman(game, ghost);
 		case "run":
-			System.out.println("run" + runaway);
+			//System.out.println("run" + runaway);
 			return runPacman(game, ghost);
 		default:
 			return null;
@@ -123,24 +140,48 @@ public class Ghosts extends POGhostController {
 	
 	private MOVE searchPacman(Game game, GHOST gh) {
 		
-		switch(gh) {
-			
-		case BLINKY: //da vueltas en donde sale pacman
-			return game.getNextMoveTowardsTarget(game.getGhostCurrentNodeIndex(gh), game.getPacManInitialNodeIndex(), DM.PATH);
-		case PINKY:  //da vueltas en donde sale ghost
-			return game.getNextMoveTowardsTarget(game.getGhostCurrentNodeIndex(gh), game.getGhostInitialNodeIndex(), DM.PATH);
-		case INKY:	//Siempre se mueve a la derecha (para pasar por los pipes)
-			 return MOVE.RIGHT;
-		case SUE:	//Se mueve al azar
-			return allMoves[rnd.nextInt(allMoves.length)];
-		default:
-			return MOVE.NEUTRAL;
-		}
+		if(game.isGhostEdible(gh))
+			return runPacman(game, gh);
 		
+		
+		if(game.getMazeIndex() == 0) {
+			switch(gh) {
+			
+			case BLINKY: 
+				return game.getNextMoveTowardsTarget(game.getGhostCurrentNodeIndex(gh), getSearchPos(game, gh, lastMaze), DM.PATH);
+			case PINKY:  //da vueltas en donde sale ghost
+				return game.getNextMoveTowardsTarget(game.getGhostCurrentNodeIndex(gh), game.getGhostInitialNodeIndex(), DM.PATH);
+			case INKY:
+				return game.getNextMoveTowardsTarget(game.getGhostCurrentNodeIndex(gh), getSearchPos(game, gh, lastMaze), DM.PATH);
+			case SUE:	//Se mueve al azar
+				return allMoves[rnd.nextInt(allMoves.length)];
+			default:
+				return MOVE.NEUTRAL;
+			}
+		}
+		else {
+		
+			switch(gh) {
+				
+			case BLINKY: //da vueltas en donde sale pacman
+				return game.getNextMoveTowardsTarget(game.getGhostCurrentNodeIndex(gh), game.getPacManInitialNodeIndex(), DM.PATH);
+			case PINKY:  //da vueltas en donde sale ghost
+				return game.getNextMoveTowardsTarget(game.getGhostCurrentNodeIndex(gh), game.getGhostInitialNodeIndex(), DM.PATH);
+			case INKY:	//Siempre se mueve a la izquierda (para pasar por los pipes)
+				 return MOVE.LEFT;
+			case SUE:	//Se mueve al azar
+				return allMoves[rnd.nextInt(allMoves.length)];
+			default:
+				return MOVE.NEUTRAL;
+			}
+		}
 	}
 	
 	
 	private MOVE attackPacman(Game game, GHOST gh) {
+		
+		if(game.isGhostEdible(gh))
+			return runPacman(game, gh);
 		
 		ArrayList<GHOST> ghosts = new ArrayList<GHOST>();
 		
@@ -175,6 +216,9 @@ public class Ghosts extends POGhostController {
 	}
 	
 	private MOVE defendPacman(Game game, GHOST gh) {
+		
+		if(game.isGhostEdible(gh))
+			return runPacman(game, gh);
 		
 		ArrayList<GHOST> ghosts = new ArrayList<GHOST>();
 		
@@ -239,6 +283,27 @@ public class Ghosts extends POGhostController {
 				distance = aux;
 		}
 		return distance;
+	}
+	
+	private int getSearchPos(Game game, GHOST gh, int maze) {
+		switch(gh) {
+		case BLINKY:
+			if(game.getGhostCurrentNodeIndex(gh) == mazeIndexes[maze][4 + blinkyPos]) {
+				blinkyPos++;
+				if (blinkyPos > 3)
+					blinkyPos = 0;
+			}
+			return mazeIndexes[maze][4 + blinkyPos];
+		case INKY:
+			if(game.getGhostCurrentNodeIndex(gh) == mazeIndexes[maze][4 + inkyPos]) {
+				inkyPos--;
+				if (inkyPos < 0)
+					inkyPos = 3;
+			}
+			return mazeIndexes[maze][4 + inkyPos];
+		default:
+			return -1;
+		}
 	}
 	
 }

@@ -3,6 +3,7 @@ package es.ucm.fdi.ici.c1920.practica3.grupo06;
 
 import pacman.Executor;
 import pacman.controllers.*;
+import pacman.game.util.Stats;
 
 public class Main {
 
@@ -26,7 +27,7 @@ public class Main {
 
 		GhostController ghosts = new Ghosts();
 		
-		/*
+		
 		//PROBAR VARIAS VECES
 		int num = 10;
 		double aver = 0;
@@ -43,7 +44,7 @@ public class Main {
 		
 		System.out.println("--------");
 		System.out.println(aver/num);
-		*/
+		
 		
 		
 		//PROBAR DOS VERSIONES DEL MISMO PACMAN/GHOSTS
@@ -76,9 +77,9 @@ public class Main {
 		
 		//PARA VER
 		
-		System.out.println(
-				executor.runGame(pacMan, ghosts, 50)
-		);
+		//System.out.println(
+		//		executor.runGame(pacMan, ghosts, 50)
+		//);
 		
 		
 	}
